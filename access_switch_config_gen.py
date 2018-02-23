@@ -6,13 +6,14 @@ from netaddr import *
 from time import sleep
 
 """
-Uses argparse to build a configuration and POST IP or alert user that IP is already in use.
+Uses argparse to build a configuration using Jinja2 and POST IP or alert user that IP is already in use in Netbox.
 Variables that are mandatory are '--clli' and '--mgmt'. Optional variable '--loc'
 
 clli = hostname
 mgmt = IP (used for IP of device, trap source, and default gateway)
 loc = Locattion (used for SNMP location)
 """
+
 
 jinja_template='''
 system {
@@ -306,7 +307,7 @@ def main():
     jdata = response.json()
 
     headers = {
-        'Authorization': "Token 7f928d324c584fff98e21a9eb8ff1bf3fd45aff9"
+        'Authorization': "Token 7f928d324c584fff98e21a9eb8ff1bf3fd45aff9" ##Bogus Token Used ;)
         }
     payload = {
         'description': 'as0-' + hostname,
