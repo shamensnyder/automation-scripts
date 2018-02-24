@@ -326,7 +326,7 @@ def main():
     out = template.render(hostname=hostname, management_ip=management_ip, trap_ip=trap_ip, default_gw=default_gw, location=location)
 
     print('Saving configuration...')
-    f = open(/var/www/html/'as0-' + hostname + '-base.txt', 'w')
+    f = open('/var/www/html/as0-' + hostname + '-base.txt', 'w')
     f.write(out)
     f.close
 
