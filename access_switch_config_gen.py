@@ -4,6 +4,7 @@ import pprint
 import jinja2
 from netaddr import *
 from time import sleep
+import sys
 
 """
 Uses argparse to build a configuration using Jinja2 and POST IP or alert user that IP is already in use in Netbox.
@@ -324,7 +325,10 @@ def main():
     template = jinja2.Template(jinja_template)
     out = template.render(hostname=hostname, management_ip=management_ip, trap_ip=trap_ip, default_gw=default_gw, location=location)
 
-    print(out)
+    print('Saving configuration...')
+    f = open('/var/www/html/as0-' + hostname + '-base.txt', 'w')
+    f.write(out)
+    f.close
 
 if __name__ == "__main__":
     main()
