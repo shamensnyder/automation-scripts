@@ -18,6 +18,27 @@ jinja_template = '''policy-options {
             }
         }
     }
+    policy-statement export-routes-to-he {
+        term {{ term }} {
+            from {
+                route-filter {{ prefix }} {% if '/24' in prefix %}exact; {% else %}upto /24;{% endif %}
+            }
+        }
+    }
+    policy-statement export-routes-to-peer-public {
+        term {{ term }} {
+            from {
+                route-filter {{ prefix }} {% if '/24' in prefix %}exact; {% else %}upto /24;{% endif %}
+            }
+        }
+    }
+    policy-statement export-routes-to-peer-google {
+        term {{ term }} {
+            from {
+                route-filter {{ prefix }} {% if '/24' in prefix %}exact; {% else %}upto /24;{% endif %}
+            }
+        }
+    }
 }
 '''
 
