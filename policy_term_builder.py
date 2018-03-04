@@ -60,6 +60,12 @@ def main():
     prefixes = prefixes1.split(',')
     #print(prefixes)
 
+    try:
+        for cidr in prefixes:
+            ip = IPNetwork(cidr)
+    except AddrFormatError:
+        print("Invalid IPv4 address format. Please check the prefix and try again.")
+        sys.exit()
 
     template = jinja2.Template(jinja_template)
     out = template.render(prefixes=prefixes, term=term)
