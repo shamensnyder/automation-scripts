@@ -53,7 +53,12 @@ def main():
     prefix = args.prefix
     term = args.term
 
-    ip = IPNetwork(prefix)
+    try:
+        ip = IPNetwork(prefix)
+        return ip
+    except AddrFormatError:
+        print('******************************************************\nInvaild IP Address. Check the IP entered and try again.\n******************************************************')
+        sys.exit()
 
     template = jinja2.Template(jinja_template)
     out = template.render(prefix=prefix, term=term)
