@@ -14,32 +14,32 @@ jinja_template = '''policy-options {
     policy-statement export-routes-to-cogent {
         term {{ term }} {
             from {
-                route-filter {{ prefix }} {% if '/24' in prefix %}exact; {% else %}upto /24;{% endif %}
+                {% for prefix in prefixes %}route-filter {{ prefix }} {% if '/24' in prefix %}exact; {% else %}upto /24;{% endif %}
+                {% endfor %}}
             }
         }
-    }
     policy-statement export-routes-to-he {
         term {{ term }} {
             from {
-                route-filter {{ prefix }} {% if '/24' in prefix %}exact; {% else %}upto /24;{% endif %}
+                {% for prefix in prefixes %}route-filter {{ prefix }} {% if '/24' in prefix %}exact; {% else %}upto /24;{% endif %}
+                {% endfor %}}
             }
         }
-    }
     policy-statement export-routes-to-peer-public {
         term {{ term }} {
             from {
-                route-filter {{ prefix }} {% if '/24' in prefix %}exact; {% else %}upto /24;{% endif %}
+                {% for prefix in prefixes %}route-filter {{ prefix }} {% if '/24' in prefix %}exact; {% else %}upto /24;{% endif %}
+                {% endfor %}}
             }
         }
-    }
     policy-statement export-routes-to-peer-google {
         term {{ term }} {
             from {
-                route-filter {{ prefix }} {% if '/24' in prefix %}exact; {% else %}upto /24;{% endif %}
+                {% for prefix in prefixes %}route-filter {{ prefix }} {% if '/24' in prefix %}exact; {% else %}upto /24;{% endif %}
+                {% endfor %}}
             }
         }
     }
-}
 '''
 
 def main():
@@ -49,19 +49,20 @@ def main():
     parse.add_argument("--term", type=str, required=True)
 
     args = parse.parse_args()
-
-    prefix = args.prefix
     term = args.term
+    prefixes = []
+    for prefix in args.prefix :
+        prefixes.append(prefix)
 
-    try:
-        ip = IPNetwork(prefix)
-        return ip
-    except AddrFormatError:
-        print('******************************************************\nInvaild IP Address. Check the IP entered and try again.\n******************************************************')
-        sys.exit()
+    prefixes1 = ''.join(prefixes)
+    #print(prefixes1)
+
+    prefixes = prefixes1.split(',')
+    #print(prefixes)
+
 
     template = jinja2.Template(jinja_template)
-    out = template.render(prefix=prefix, term=term)
+    out = template.render(prefixes=prefixes, term=term)
 
     print(out)
 
