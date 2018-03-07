@@ -29,8 +29,14 @@ radius-server attribute 32 tmc-3306
 radius-server host a.b.c.d timeout 3 retransmit 1 key qw456yuji
 !
 interface GigabitEthernet 1/1
- switchport access vlan {{ vlan }}
+ {% if qinq == 'yes' -%}
+ switchport hybrid native vlan {{ vlan }}
+ switchport hybrid allowed vlan {{ vlan }}
+ switchport hybrid port-type unaware
+ switchport mode hybrid
+ {%- else %}switchport access vlan {{ vlan }}
  description place-holder
+ {%- endif %}
 !
 interface GigabitEthernet 1/2
 !
@@ -42,6 +48,9 @@ interface GigabitEthernet 1/5
  switchport trunk allowed vlan {{ vlan }},4010
  switchport mode trunk
  description as0-{{ clli }} : ge-x/x/x : :
+ {%- if qinq == 'yes' %}
+ mtu 1600
+ {%- endif %}
 !
 interface GigabitEthernet 1/6
 !
@@ -98,13 +107,14 @@ def main():
     parse.add_argument("--clli", type=str, required=True)
     parse.add_argument("--vlan", type=str, required=False)
     parse.add_argument("--mgmt", type=str, required=True)
+    parse.add_argument("--qinq", type=str, required=False)
 
     args = parse.parse_args()
 
     hostname = args.clli
     vlan = args.vlan
     mgmt = args.mgmt
-
+    qinq = args.qinq.lower()
 
     mgmt = IPNetwork(mgmt)
     querystring = {"q":mgmt.ip}
@@ -136,7 +146,7 @@ def main():
 
     sleep(2)
     template = jinja2.Template(jinja_template)
-    out = template.render(hostname=hostname, mgmt=mgmt, default_gw=default_gw, clli=clli, vlan=vlan, subnetmask=subnetmask)
+    out = template.render(hostname=hostname, mgmt=mgmt, default_gw=default_gw, clli=clli, vlan=vlan, subnetmask=subnetmask, qinq=qinq)
 
     #print('Saving configuration...')
     #f = open('/Users/ssnyder/Google Drive/Configurations/' + hostname + '-base.txt', 'w')
