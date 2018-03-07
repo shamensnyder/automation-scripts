@@ -92,6 +92,8 @@ end
 
 def main():
 
+    url = 'http://netbox.zitomedia.net/api/ipam/ip-addresses/'
+  
     parse = argparse.ArgumentParser()
     parse.add_argument("--clli", type=str, required=True)
     parse.add_argument("--vlan", type=str, required=False)
@@ -105,10 +107,32 @@ def main():
 
 
     mgmt = IPNetwork(mgmt)
+    querystring = {"q":mgmt.ip}
     default_gw = mgmt.network + 1
     clli = hostname[4:10]
     subnetmask = mgmt.netmask
+    payload_ip = mgmt
     mgmt = mgmt.ip
+
+
+    response = requests.request("GET", url, params=querystring)
+    jdata = response.json()
+
+
+    headers = {
+        'Authorization': "Token Your Token Here" # Change token for your enviroment
+        }
+    payload = {
+        'description': hostname,
+        'address': str(payload_ip)
+        }
+
+    if jdata['count'] == 0 :
+        print("**********************************************************************\nIP Address not reserved in Netbox, POSTing...\n**********************************************************************")
+        post_response = requests.post(url, headers=headers, data=payload)
+    elif jdata['count'] > 0 and jdata['results'][0]['address'][:-3] == str(mgmt) :
+        netboxDescription = jdata['results'][0]['description']
+        print("**********************************************************************\nWARNING! Selected IP Address is already reserved in Netbox as " + netboxDescription + "\n**********************************************************************")
 
     sleep(2)
     template = jinja2.Template(jinja_template)
