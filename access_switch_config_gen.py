@@ -316,10 +316,11 @@ def main():
         }
 
     if jdata['count'] == 0 :
-        print("**********************************************************************\nIP Address not reserved in Netbox, POSTing...\n**********************************************************************")
+        print("*" * 60 + "\nIP Address not reserved in Netbox, POSTing...\n" + "*" * 60)
         post_response = requests.post(url, headers=headers, data=payload)
     elif jdata['count'] > 0 and jdata['results'][0]['address'][:-3] == str(ip.ip) :
-        print("**********************************************************************\nWARNING! IP Address is reserved in Netbox.\n**********************************************************************")
+        netboxDescription = jdata['results'][0]['description']
+        print("*" * 60 + "\nWARNING! Selected IP Address is already reserved in Netbox as " + netboxDescription + "\n" + "*" * 60)
 
     sleep(2)
     template = jinja2.Template(jinja_template)
